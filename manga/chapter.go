@@ -50,7 +50,7 @@ func (c *Chapter) Pages() []*Page {
 
 // SetPage sets page p in pages at position index.
 func (c *Chapter) SetPage(index int, p *Page) error {
-	if index < 0 || len(c.pages) <= index {
+	if index < 0 || index >= len(c.pages) {
 		return errors.Wrap(ErrOutOfBounds, "Could not set page")
 	}
 

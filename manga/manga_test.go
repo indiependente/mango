@@ -1,31 +1,34 @@
-package manga_test
+package manga
 
 import (
 	"reflect"
 	"testing"
-
-	"github.com/indiependente/mango/manga"
 )
 
-func NewChapters() map[int]*manga.Chapter {
-	return map[int]*manga.Chapter{
-		1: manga.NewChapter(),
+func NewChapters() map[int]*Chapter {
+	return map[int]*Chapter{
+		1: &Chapter{
+			number: 0,
+			pages:  nil,
+		},
 	}
 }
 
 func TestNewManga(t *testing.T) {
 	tests := []struct {
 		name string
-		want *manga.Manga
+		want *Manga
 	}{
 		{
 			name: "new manga - empty",
-			want: manga.NewManga(),
+			want: &Manga{
+				chapters: make(map[int]*Chapter),
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := manga.NewManga(); !reflect.DeepEqual(got, tt.want) {
+			if got := NewManga(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewManga() = %v, want %v", got, tt.want)
 			}
 		})
@@ -34,22 +37,24 @@ func TestNewManga(t *testing.T) {
 
 func TestNewMangaWithChapters(t *testing.T) {
 	type args struct {
-		cs map[int]*manga.Chapter
+		cs map[int]*Chapter
 	}
 	tests := []struct {
 		name string
 		args args
-		want *manga.Manga
+		want *Manga
 	}{
 		{
 			name: "new manga - with chapters",
 			args: args{cs: NewChapters()},
-			want: manga.NewMangaWithChapters(NewChapters()),
+			want: &Manga{
+				chapters: NewChapters(),
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := manga.NewMangaWithChapters(tt.args.cs); !reflect.DeepEqual(got, tt.want) {
+			if got := NewMangaWithChapters(tt.args.cs); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewMangaWithChapters() = %v, want %v", got, tt.want)
 			}
 		})
@@ -60,12 +65,12 @@ func TestNewMangaWithChaptersAuthorTitle(t *testing.T) {
 	type args struct {
 		a  string
 		t  string
-		cs map[int]*manga.Chapter
+		cs map[int]*Chapter
 	}
 	tests := []struct {
 		name string
 		args args
-		want *manga.Manga
+		want *Manga
 	}{
 		{
 			name: "new manga - with autor, title and chapters",
@@ -74,12 +79,16 @@ func TestNewMangaWithChaptersAuthorTitle(t *testing.T) {
 				t:  "Shingeki no kyojin",
 				cs: NewChapters(),
 			},
-			want: manga.NewMangaWithChaptersAuthorTitle("Hajime Isayama", "Shingeki no kyojin", NewChapters()),
+			want: &Manga{
+				author:   "Hajime Isayama",
+				title:    "Shingeki no kyojin",
+				chapters: NewChapters(),
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := manga.NewMangaWithChaptersAuthorTitle(tt.args.a, tt.args.t, tt.args.cs); !reflect.DeepEqual(got, tt.want) {
+			if got := NewMangaWithChaptersAuthorTitle(tt.args.a, tt.args.t, tt.args.cs); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewMangaWithChaptersAuthorTitle() = %v, want %v", got, tt.want)
 			}
 		})
@@ -90,7 +99,7 @@ func TestManga_Author(t *testing.T) {
 	type fields struct {
 		author   string
 		title    string
-		chapters map[int]*manga.Chapter
+		chapters map[int]*Chapter
 	}
 	tests := []struct {
 		name   string
@@ -109,9 +118,13 @@ func TestManga_Author(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := manga.NewMangaWithChaptersAuthorTitle(tt.fields.author, tt.fields.title, tt.fields.chapters)
+			m := &Manga{
+				author:   tt.fields.author,
+				title:    tt.fields.title,
+				chapters: tt.fields.chapters,
+			}
 			if got := m.Author(); got != tt.want {
-				t.Errorf("Manga.Author() = %v, want %v", got, tt.want)
+				t.Errorf("Author() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -121,7 +134,7 @@ func TestManga_Title(t *testing.T) {
 	type fields struct {
 		author   string
 		title    string
-		chapters map[int]*manga.Chapter
+		chapters map[int]*Chapter
 	}
 	tests := []struct {
 		name   string
@@ -140,9 +153,13 @@ func TestManga_Title(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := manga.NewMangaWithChaptersAuthorTitle(tt.fields.author, tt.fields.title, tt.fields.chapters)
+			m := &Manga{
+				author:   tt.fields.author,
+				title:    tt.fields.title,
+				chapters: tt.fields.chapters,
+			}
 			if got := m.Title(); got != tt.want {
-				t.Errorf("Manga.Title() = %v, want %v", got, tt.want)
+				t.Errorf("Title() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -152,7 +169,7 @@ func TestManga_Chapter(t *testing.T) {
 	type fields struct {
 		author   string
 		title    string
-		chapters map[int]*manga.Chapter
+		chapters map[int]*Chapter
 	}
 	type args struct {
 		i int
@@ -161,7 +178,7 @@ func TestManga_Chapter(t *testing.T) {
 		name   string
 		fields fields
 		args   args
-		want   *manga.Chapter
+		want   *Chapter
 	}{
 		{
 			name: "chapter",
@@ -171,7 +188,7 @@ func TestManga_Chapter(t *testing.T) {
 			args: args{
 				i: 1,
 			},
-			want: manga.NewChapter(),
+			want: &Chapter{},
 		},
 		{
 			name: "chapter not found",
@@ -186,10 +203,12 @@ func TestManga_Chapter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := manga.NewMangaWithChapters(tt.fields.chapters)
+			m := &Manga{
+				chapters: tt.fields.chapters,
+			}
 
 			if got := m.Chapter(tt.args.i); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Manga.Chapter() = %v, want %v", got, tt.want)
+				t.Errorf("Chapter() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -199,11 +218,11 @@ func TestManga_SetChapter(t *testing.T) {
 	type fields struct {
 		author   string
 		title    string
-		chapters map[int]*manga.Chapter
+		chapters map[int]*Chapter
 	}
 	type args struct {
 		i int
-		c *manga.Chapter
+		c *Chapter
 	}
 	tests := []struct {
 		name    string
@@ -216,7 +235,7 @@ func TestManga_SetChapter(t *testing.T) {
 			fields: fields{},
 			args: args{
 				i: 1,
-				c: manga.NewChapter(),
+				c: &Chapter{},
 			},
 			wantErr: false,
 		},
@@ -227,7 +246,7 @@ func TestManga_SetChapter(t *testing.T) {
 			},
 			args: args{
 				i: 1,
-				c: manga.NewChapter(),
+				c: &Chapter{},
 			},
 			wantErr: true,
 		},
@@ -243,14 +262,20 @@ func TestManga_SetChapter(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var m *manga.Manga
+			var m *Manga
 			if tt.fields.chapters != nil {
-				m = manga.NewMangaWithChaptersAuthorTitle(tt.fields.author, tt.fields.title, tt.fields.chapters)
+				m = &Manga{
+					author:   tt.fields.author,
+					title:    tt.fields.title,
+					chapters: tt.fields.chapters,
+				}
 			} else {
-				m = manga.NewManga()
+				m = &Manga{
+					chapters: make(map[int]*Chapter),
+				}
 			}
 			if err := m.SetChapter(tt.args.i, tt.args.c); (err != nil) != tt.wantErr {
-				t.Errorf("Manga.SetChapter() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("SetChapter() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

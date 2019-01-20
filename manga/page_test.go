@@ -1,12 +1,22 @@
-package manga_test
+package manga
 
 import (
 	"image"
 	"reflect"
 	"testing"
-
-	"github.com/indiependente/mango/manga"
 )
+
+func NewRectangle() image.Image {
+	width := 200
+	height := 100
+
+	upLeft := image.Point{0, 0}
+	lowRight := image.Point{width, height}
+
+	img := image.NewRGBA(image.Rectangle{upLeft, lowRight})
+
+	return img
+}
 
 func TestNewPage(t *testing.T) {
 	type args struct {
@@ -16,13 +26,34 @@ func TestNewPage(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want *manga.Page
+		want *Page
 	}{
-		// TODO: Add test cases.
+		{
+			name: "new page",
+			args: args{
+				n:  1,
+				im: nil,
+			},
+			want: &Page{
+				number: 1,
+				image:  nil,
+			},
+		},
+		{
+			name: "page - with image",
+			args: args{
+				n:  1,
+				im: NewRectangle(),
+			},
+			want: &Page{
+				number: 1,
+				image:  NewRectangle(),
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := manga.NewPage(tt.args.n, tt.args.im); !reflect.DeepEqual(got, tt.want) {
+			if got := NewPage(tt.args.n, tt.args.im); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewPage() = %v, want %v", got, tt.want)
 			}
 		})
@@ -39,11 +70,18 @@ func TestPage_Number(t *testing.T) {
 		fields fields
 		want   int
 	}{
-		// TODO: Add test cases.
+		{
+			name: "page - number",
+			fields: fields{
+				number: 1,
+				image:  nil,
+			},
+			want: 1,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := manga.NewPage(
+			p := NewPage(
 				tt.fields.number,
 				tt.fields.image,
 			)
@@ -64,11 +102,18 @@ func TestPage_Image(t *testing.T) {
 		fields fields
 		want   image.Image
 	}{
-		// TODO: Add test cases.
+		{
+			name: "page - image",
+			fields: fields{
+				number: 1,
+				image:  NewRectangle(),
+			},
+			want: NewRectangle(),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := manga.NewPage(
+			p := NewPage(
 				tt.fields.number,
 				tt.fields.image,
 			)
