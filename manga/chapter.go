@@ -12,7 +12,7 @@ type Chapter struct {
 func NewChapter() *Chapter {
 	return &Chapter{
 		number: 0,
-		pages:  make([]*Page, 0, 0),
+		pages:  make([]*Page, 0),
 	}
 }
 

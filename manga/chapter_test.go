@@ -14,7 +14,7 @@ func TestNewChapter(t *testing.T) {
 			name: "new chapter",
 			want: &Chapter{
 				number: 0,
-				pages:  make([]*Page, 0, 0),
+				pages:  make([]*Page, 0),
 			},
 		},
 	}
@@ -41,11 +41,11 @@ func TestNewChapterWithNAndPages(t *testing.T) {
 			name: "new chapter with n and pages",
 			args: args{
 				n:     1,
-				pages: make([]*Page, 0, 0),
+				pages: make([]*Page, 0),
 			},
 			want: &Chapter{
 				number: 1,
-				pages:  make([]*Page, 0, 0),
+				pages:  make([]*Page, 0),
 			},
 		},
 	}
@@ -76,7 +76,7 @@ func TestChapter_SetNumber(t *testing.T) {
 			name: "chapter - set number",
 			fields: fields{
 				number: 0,
-				pages:  make([]*Page, 0, 0),
+				pages:  make([]*Page, 0),
 			},
 			args: args{
 				n: 1,
@@ -87,7 +87,7 @@ func TestChapter_SetNumber(t *testing.T) {
 			name: "chapter - set number - number override",
 			fields: fields{
 				number: 2,
-				pages:  make([]*Page, 0, 0),
+				pages:  make([]*Page, 0),
 			},
 			args: args{
 				n: 1,
@@ -123,7 +123,7 @@ func TestChapter_Number(t *testing.T) {
 			name: "chapter - number",
 			fields: fields{
 				number: 1,
-				pages:  make([]*Page, 0, 0),
+				pages:  make([]*Page, 0),
 			},
 			want: 1,
 		},
@@ -155,7 +155,7 @@ func TestChapter_Len(t *testing.T) {
 			name: "chapter - len",
 			fields: fields{
 				number: 1,
-				pages:  make([]*Page, 0, 0),
+				pages:  make([]*Page, 0),
 			},
 			want: 0,
 		},
@@ -187,9 +187,9 @@ func TestChapter_Pages(t *testing.T) {
 			name: "chapter - pages",
 			fields: fields{
 				number: 1,
-				pages:  make([]*Page, 0, 0),
+				pages:  make([]*Page, 0),
 			},
-			want: make([]*Page, 0, 0),
+			want: make([]*Page, 0),
 		},
 	}
 	for _, tt := range tests {
@@ -224,7 +224,7 @@ func TestChapter_SetPage(t *testing.T) {
 			name: "chapter - set page",
 			fields: fields{
 				number: 1,
-				pages:  make([]*Page, 1, 1),
+				pages:  make([]*Page, 1),
 			},
 			args: args{
 				index: 0,
@@ -236,7 +236,7 @@ func TestChapter_SetPage(t *testing.T) {
 			name: "chapter - set page - out of bounds",
 			fields: fields{
 				number: 1,
-				pages:  make([]*Page, 1, 1),
+				pages:  make([]*Page, 1),
 			},
 			args: args{
 				index: 10,
@@ -248,7 +248,7 @@ func TestChapter_SetPage(t *testing.T) {
 			name: "chapter - set page - nil page",
 			fields: fields{
 				number: 1,
-				pages:  make([]*Page, 1, 1),
+				pages:  make([]*Page, 1),
 			},
 			args: args{
 				index: 0,

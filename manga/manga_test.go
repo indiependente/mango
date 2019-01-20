@@ -167,8 +167,6 @@ func TestManga_Title(t *testing.T) {
 
 func TestManga_Chapter(t *testing.T) {
 	type fields struct {
-		author   string
-		title    string
 		chapters map[int]*Chapter
 	}
 	type args struct {
