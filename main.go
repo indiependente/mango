@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
 	"os"
 	"strings"
+	"time"
+
+	"github.com/gocolly/colly"
 )
 
 const (
-	urlTemplate = "https://www.mangaeden.com/it/it-manga/MANGA/CHAP/1/"
+	base        = "https://www.mangaeden.com"
+	urlTemplate = "/it/it-manga/MANGA/CHAP/PAGE/"
 )
 
 func main() {
@@ -20,14 +21,45 @@ func main() {
 	url := strings.Replace(urlTemplate, "MANGA", manga, -1)
 	chap := os.Args[2]
 	url = strings.Replace(url, "CHAP", chap, -1)
-	resp, err := http.Get(url)
-	if err != nil {
-		log.Panicf("Could not GET %s\n: %v\n", url, err)
-	}
-	defer resp.Body.Close()
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Panicf("Could not read Body: %v\n", err)
-	}
-	fmt.Println(string(data))
+	page := os.Args[3]
+	url = strings.Replace(url, "PAGE", page, -1)
+
+	c := colly.NewCollector(
+		colly.Async(true),
+	)
+	c.Limit(&colly.LimitRule{
+		Parallelism: 2,
+		RandomDelay: 5 * time.Second,
+	})
+	pagesColl := colly.NewCollector()
+	// pagesColl.Limit(&colly.LimitRule{
+	// 	Parallelism: 2,
+	// 	RandomDelay: 5 * time.Second,
+	// })
+
+	pagesColl.OnRequest(func(r *colly.Request) {
+		fmt.Println(">", r.URL.String())
+	})
+
+	pagesColl.OnError(func(r *colly.Response, err error) {
+		fmt.Println("pagesColl failed- URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
+	})
+
+	pagesColl.OnHTML("#mainImg", func(e *colly.HTMLElement) {
+		fmt.Printf("%s\n", e.Attr("src"))
+	})
+
+	c.OnHTML("#pageSelect", func(e *colly.HTMLElement) {
+		e.ForEach("option", func(_ int, o *colly.HTMLElement) {
+			fmt.Printf("Visiting %s\n", base+o.Attr("value"))
+			pagesColl.Visit(base + o.Attr("value"))
+		})
+	})
+	c.OnError(func(r *colly.Response, err error) {
+		fmt.Println("c failed- URL:", r.Request.URL, "failed with response:", r, "\nError:", err)
+	})
+
+	c.Visit(base + url)
+	c.Wait()
+
 }
